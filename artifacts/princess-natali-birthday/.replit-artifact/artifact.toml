@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Princess Natali Birthday Surprise"
+description = "A cinematic, interactive birthday experience for Princess Natali, with pink code rain, a photo album containing her two supplied portraits, a cake-and-roses wish scene, a secret letter, a wishing star, and a replayable finale."
+version = "1.0.0"
+id = "artifacts/princess-natali-birthday"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18219
+
+[services.development]
+run = "pnpm --filter @workspace/princess-natali-birthday run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/princess-natali-birthday", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/princess-natali-birthday/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18219"
+BASE_PATH = "/"
