@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: birthdayWishes
+    description: Private birthday wish submissions
 paths:
   /healthz:
     get:
@@ -24,6 +26,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /birthday-wishes/unlock:
+    post:
+      operationId: unlockBirthdayWish
+      tags: [birthdayWishes]
+      summary: Unlock the birthday wish form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BirthdayWishUnlockInput"
+      responses:
+        "200":
+          description: The wish form is unlocked for this browser session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BirthdayWishUnlockResult"
+        "400":
+          description: Invalid request
+        "401":
+          description: Incorrect passcode
+        "429":
+          description: Too many attempts
+        "503":
+          description: Unlock is temporarily unavailable
+  /birthday-wishes:
+    post:
+      operationId: sendBirthdayWish
+      tags: [birthdayWishes]
+      summary: Email a birthday wish to the connected inbox
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BirthdayWishInput"
+      responses:
+        "200":
+          description: The wish was sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BirthdayWishSentResult"
+        "400":
+          description: Invalid wish
+        "401":
+          description: Unlock the form before sending a wish
+        "429":
+          description: Too many submissions
+        "503":
+          description: Email delivery is temporarily unavailable
 components:
   schemas:
     HealthStatus:
@@ -33,4 +87,44 @@ components:
           type: string
       required:
         - status
+    BirthdayWishUnlockInput:
+      type: object
+      properties:
+        passcode:
+          type: string
+          minLength: 4
+          maxLength: 4
+          pattern: "^[0-9]{4}$"
+      required:
+        - passcode
+    BirthdayWishUnlockResult:
+      type: object
+      properties:
+        unlocked:
+          type: boolean
+      required:
+        - unlocked
+    BirthdayWishInput:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+        message:
+          type: string
+          minLength: 1
+          maxLength: 500
+        website:
+          type: string
+          maxLength: 200
+          description: Hidden spam-trap field; leave empty
+      required:
+        - message
+    BirthdayWishSentResult:
+      type: object
+      properties:
+        sent:
+          type: boolean
+      required:
+        - sent
 
