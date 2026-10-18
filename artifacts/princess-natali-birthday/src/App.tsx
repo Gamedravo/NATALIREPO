@@ -184,7 +184,7 @@ function CakeAndBouquet({
 }
 
 function App() {
-  const [scene, setScene] = useState<Scene>('passcode');
+  const [scene, setScene] = useState<Scene>('code');
   const [introPhase, setIntroPhase] = useState<IntroPhase>('count');
   const [count, setCount] = useState(1);
   const [albumOpen, setAlbumOpen] = useState(false);
@@ -347,9 +347,7 @@ function App() {
   useEffect(() => {
     let timer: number | undefined;
     if (scene === 'code' && introPhase === 'ready') {
-      timer = window.setTimeout(() => setScene('welcome'), config.durations.revealAfter);
-    } else if (scene === 'welcome') {
-      timer = window.setTimeout(() => setScene('album'), config.durations.welcomeHold);
+      timer = window.setTimeout(() => setScene('album'), config.durations.revealAfter);
     } else if (scene === 'album' && !albumOpen && photoIndex === 0) {
       timer = window.setTimeout(() => setAlbumOpen(true), config.durations.albumOpenDelay);
     } else if (scene === 'album' && albumOpen && !pageTurning) {
@@ -493,7 +491,7 @@ function App() {
             {cakeWished && <p className="message-prompt fade-in" data-testid="text-wish-response">{config.copy.wishResponse}</p>}
             <button className="quiet-action" onClick={() => setRoseMessage(true)} data-testid="button-tap-roses">TAP THE ROSES</button>
             {roseMessage && <p className="message-prompt fade-in" data-testid="text-rose-message">{config.copy.roseMessage}</p>}
-            {(cakeWished || roseMessage) && <button className="primary-action fade-in" onClick={() => setScene('letter')} data-testid="button-continue-letter">THERE'S A LETTER FOR YOU</button>}
+            {cakeWished && <button className="primary-action fade-in" onClick={() => setScene('passcode')} data-testid="button-continue-passcode">UNLOCK YOUR LAST SURPRISE 🔐</button>}
           </div>
         </section>
       )}
