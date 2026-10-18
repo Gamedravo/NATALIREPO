@@ -57,13 +57,13 @@ export function BirthdayPrelude({
             <input
               className="wish-input passcode-input"
               id="wish-passcode"
-              type="password"
+              type="text"
               inputMode="numeric"
-              pattern="[0-9]{4}"
-              maxLength={4}
+              pattern="(?:[0-9]{4}|[0-9]{2}/[0-9]{2})"
+              maxLength={5}
               autoComplete="off"
               value={passcode}
-              onChange={(event) => onPasscodeChange(event.target.value.replace(/\D/g, '').slice(0, 4))}
+              onChange={(event) => onPasscodeChange(event.target.value.replace(/[^0-9/]/g, '').slice(0, 5))}
               aria-describedby="wish-passcode-hint"
               required
               data-testid="input-wish-passcode"

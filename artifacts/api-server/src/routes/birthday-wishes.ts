@@ -51,7 +51,8 @@ router.post("/birthday-wishes/unlock", (req, res): void => {
     return;
   }
 
-  if (parsed.data.passcode !== PASSCODE) {
+  const normalizedPasscode = parsed.data.passcode.replace(/\D/g, "");
+  if (normalizedPasscode !== PASSCODE) {
     isRateLimited(failedUnlocks, key, 8);
     res.status(401).json({ error: "That code did not open the envelope." });
     return;

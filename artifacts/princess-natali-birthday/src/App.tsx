@@ -256,7 +256,7 @@ function App() {
     event.preventDefault();
     setWishError('');
     try {
-      const result = await unlockBirthdayWish.mutateAsync({ data: { passcode: wishPasscode } });
+      const result = await unlockBirthdayWish.mutateAsync({ data: { passcode: wishPasscode.replace(/\D/g, '') } });
       setWishPasscode('');
       if (!result.unlocked) {
         setWishError(config.copy.wishUnlockError);
@@ -287,7 +287,7 @@ function App() {
       }
       setWishMessage('');
       setHoneypot('');
-      setScene('wishSent');
+      setScene('finale');
     } catch (error) {
       setWishError(apiErrorMessage(error) ?? config.copy.wishSetupError);
     }
@@ -429,7 +429,7 @@ function App() {
                 {introPhase === 'ready' && <p className="code-love">{config.copy.openingLine}</p>}
               </>
             )}
-            {introPhase === 'ready' && <button className="primary-action fade-in" onClick={() => setScene('welcome')} data-testid="button-open-surprise">CONTINUE TO YOUR GIFT</button>}
+
           </div>
         </section>
       )}
