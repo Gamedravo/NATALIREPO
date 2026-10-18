@@ -37,10 +37,8 @@ export const UnlockBirthdayWishResponse = zod.object({
 
 
 /**
- * @summary Email a birthday wish to the connected inbox
+ * @summary Email a private birthday wish to the configured recipient
  */
-export const sendBirthdayWishBodyNameMax = 60;
-
 export const sendBirthdayWishBodyMessageMax = 500;
 
 export const sendBirthdayWishBodyWebsiteMax = 200;
@@ -48,7 +46,6 @@ export const sendBirthdayWishBodyWebsiteMax = 200;
 
 
 export const SendBirthdayWishBody = zod.object({
-  "name": zod.string().max(sendBirthdayWishBodyNameMax).optional(),
   "message": zod.string().min(1).max(sendBirthdayWishBodyMessageMax),
   "website": zod.string().max(sendBirthdayWishBodyWebsiteMax).optional().describe('Hidden spam-trap field; leave empty')
 })

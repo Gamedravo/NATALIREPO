@@ -92,9 +92,9 @@ router.post("/birthday-wishes", async (req, res): Promise<void> => {
     return;
   }
 
-  // Honeypot submissions receive the same response as real submissions but never send email.
+  // Reject spam-trap submissions; never report delivery without an email provider accepting it.
   if (parsed.data.website?.trim()) {
-    res.json(SendBirthdayWishResponse.parse({ sent: true }));
+    res.status(400).json({ error: "This wish could not be accepted. Please leave the hidden field empty." });
     return;
   }
 
@@ -103,7 +103,14 @@ router.post("/birthday-wishes", async (req, res): Promise<void> => {
     res.status(400).json({ error: "Please add a short birthday wish before sending." });
     return;
   }
-  const name = parsed.data.name?.trim().replace(/[\r\n\0]/g, " ").slice(0, 60) || "Someone special";
+  const recipientEmail = process.env.WISH_RECIPIENT_EMAIL?.trim();
+  if (!recipientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
+    req.log.warn("Birthday wish delivery is not configured: WISH_RECIPIENT_EMAIL is missing or invalid");
+    res.status(503).json({
+      error: "The wish inbox is not set up yet. Please ask the site owner to configure WISH_RECIPIENT_EMAIL.",
+    });
+    return;
+  }
 
   try {
     const connectors = new ReplitConnectors();
@@ -114,7 +121,9 @@ router.post("/birthday-wishes", async (req, res): Promise<void> => {
     );
     if (!profileResponse.ok) {
       req.log.error({ status: profileResponse.status }, "Could not read connected Gmail profile for birthday wish");
-      res.status(503).json({ error: "I could not reach my wish inbox just now. Please try again later." });
+      res.status(503).json({
+        error: "The site's Gmail connection is not available. Please ask the site owner to reconnect Gmail.",
+      });
       return;
     }
 
@@ -126,26 +135,32 @@ router.post("/birthday-wishes", async (req, res): Promise<void> => {
         : "";
     if (!emailAddress || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress)) {
       req.log.error("Connected Gmail profile did not include a usable email address");
-      res.status(503).json({ error: "I could not reach my wish inbox just now. Please try again later." });
+      res.status(503).json({
+        error: "The site's Gmail connection is not available. Please ask the site owner to reconnect Gmail.",
+      });
       return;
     }
 
+    const subject = "✨ A Secret Birthday Wish from Princess Natali";
+    const submittedAt = new Date().toISOString();
     const mailText = [
-      "A birthday wish for Princess Natali!",
+      "Princess Natali has made a birthday wish on her special website.",
       "",
-      `From: ${name}`,
-      "",
+      "Her wish:",
       message,
+      "",
+      `Submitted at (UTC): ${submittedAt}`,
+      "Website: Princess Natali Birthday Surprise",
     ].join("\r\n");
     const rawMessage = [
-      `To: ${emailAddress}`,
+      `To: ${recipientEmail}`,
       `From: ${emailAddress}`,
-      "Subject: A birthday wish for Princess Natali",
+      `Subject: =?UTF-8?B?${Buffer.from(subject, "utf8").toString("base64")}?=`,
       "MIME-Version: 1.0",
       "Content-Type: text/plain; charset=UTF-8",
-      "Content-Transfer-Encoding: 8bit",
+      "Content-Transfer-Encoding: base64",
       "",
-      mailText,
+      Buffer.from(mailText, "utf8").toString("base64").replace(/.{1,76}/g, "$&\r\n").trim(),
     ].join("\r\n");
     const sendResponse = await connectors.proxy(
       "google-mail",
@@ -159,7 +174,7 @@ router.post("/birthday-wishes", async (req, res): Promise<void> => {
 
     if (!sendResponse.ok) {
       req.log.error({ status: sendResponse.status }, "Gmail did not accept birthday wish email");
-      res.status(503).json({ error: "Your wish could not be delivered just now. Please try again later." });
+      res.status(503).json({ error: "Gmail could not accept your wish just now. Please keep it here and try again." });
       return;
     }
 
@@ -169,7 +184,9 @@ router.post("/birthday-wishes", async (req, res): Promise<void> => {
       { errorName: error instanceof Error ? error.name : "UnknownError" },
       "Birthday wish email delivery failed",
     );
-    res.status(503).json({ error: "Your wish could not be delivered just now. Please try again later." });
+    res.status(503).json({
+      error: "The site's Gmail connection is not available. Please ask the site owner to check the email setup.",
+    });
   }
 });
 

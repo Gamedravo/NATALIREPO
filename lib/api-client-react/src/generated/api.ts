@@ -229,7 +229,7 @@ export const getSendBirthdayWishUrl = () => {
 }
 
 /**
- * @summary Email a birthday wish to the connected inbox
+ * @summary Email a private birthday wish to the configured recipient
  */
 export const sendBirthdayWish = async (birthdayWishInput: BirthdayWishInput, options?: Parameters<typeof customFetch>[1]): Promise<BirthdayWishSentResult> => {
 
@@ -295,7 +295,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SendBirthdayWishMutationVariables = {data: BodyType<BirthdayWishInput>}
 
     /**
- * @summary Email a birthday wish to the connected inbox
+ * @summary Email a private birthday wish to the configured recipient
  */
 export const useSendBirthdayWish = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendBirthdayWish>>, TError,SendBirthdayWishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}

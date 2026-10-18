@@ -23,8 +23,6 @@ export interface BirthdayWishUnlockResult {
 }
 
 export interface BirthdayWishInput {
-  /** @maxLength 60 */
-  name?: string;
   /**
      * @minLength 1
      * @maxLength 500

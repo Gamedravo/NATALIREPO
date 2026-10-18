@@ -1,8 +1,9 @@
-import { type CSSProperties, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, type FormEvent, useEffect, useRef, useState } from 'react';
 import { useSendBirthdayWish, useUnlockBirthdayWish } from '@workspace/api-client-react';
+import { BirthdayPrelude, type PreludeScene } from './components/BirthdayPrelude';
 import { birthdayConfig as config } from './config';
 
-type Scene = 'code' | 'welcome' | 'album' | 'cake' | 'letter' | 'wish' | 'finale';
+type Scene = PreludeScene | 'code' | 'welcome' | 'album' | 'cake' | 'letter' | 'wish' | 'finale';
 type IntroPhase = 'count' | 'heart' | 'reveal' | 'ready';
 
 type CodeStream = {
@@ -129,6 +130,22 @@ function RevealLine({ text }: { text: string }) {
   return <span className="reveal-line">{Array.from(text).map((character, index) => <span className="reveal-char" style={{ animationDelay: `${index * 38}ms` }} key={`${character}-${index}`}>{character}</span>)}</span>;
 }
 
+function isPreludeScene(scene: Scene): scene is PreludeScene {
+  return ['passcode', 'unlocking', 'loveMessage', 'secretWish', 'wishSent'].includes(scene);
+}
+
+function apiErrorMessage(error: unknown): string | undefined {
+  if (!error || typeof error !== 'object' || !('data' in error)) return undefined;
+  const data = error.data;
+  if (!data || typeof data !== 'object' || !('error' in data)) return undefined;
+  return typeof data.error === 'string' ? data.error : undefined;
+}
+
+function apiErrorStatus(error: unknown): number | undefined {
+  if (!error || typeof error !== 'object' || !('status' in error)) return undefined;
+  return typeof error.status === 'number' ? error.status : undefined;
+}
+
 function RosePetals() {
   return <div className="rose-petals" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>;
 }
@@ -167,7 +184,7 @@ function CakeAndBouquet({
 }
 
 function App() {
-  const [scene, setScene] = useState<Scene>('code');
+  const [scene, setScene] = useState<Scene>('passcode');
   const [introPhase, setIntroPhase] = useState<IntroPhase>('count');
   const [count, setCount] = useState(1);
   const [albumOpen, setAlbumOpen] = useState(false);
@@ -180,14 +197,11 @@ function App() {
   const [starLaunched, setStarLaunched] = useState(false);
   const [showStarResponse, setShowStarResponse] = useState(false);
   const [heart, setHeart] = useState('');
-  const [wishFormOpen, setWishFormOpen] = useState(false);
-  const [wishUnlocked, setWishUnlocked] = useState(false);
   const [wishPasscode, setWishPasscode] = useState('');
-  const [wishName, setWishName] = useState('');
   const [wishMessage, setWishMessage] = useState('');
   const [wishError, setWishError] = useState('');
-  const [wishSent, setWishSent] = useState(false);
   const [honeypot, setHoneypot] = useState('');
+  const [visibleLoveParagraphs, setVisibleLoveParagraphs] = useState(0);
   const unlockBirthdayWish = useUnlockBirthdayWish();
   const sendBirthdayWish = useSendBirthdayWish();
   const touchStartX = useRef<number | null>(null);
@@ -238,44 +252,67 @@ function App() {
     scheduleInteraction(() => setShowStarResponse(true), 1600);
   };
 
-  const unlockWishForm = async (event: React.FormEvent<HTMLFormElement>) => {
+  const unlockBirthdayExperience = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setWishError('');
     try {
-      await unlockBirthdayWish.mutateAsync({ data: { passcode: wishPasscode } });
-      setWishUnlocked(true);
+      const result = await unlockBirthdayWish.mutateAsync({ data: { passcode: wishPasscode } });
       setWishPasscode('');
-    } catch {
-      setWishError(wishPasscode.length === 4 ? config.copy.wishPasscodeIncorrect : config.copy.wishUnlockError);
+      if (!result.unlocked) {
+        setWishError(config.copy.wishUnlockError);
+        return;
+      }
+      setVisibleLoveParagraphs(0);
+      setScene('unlocking');
+    } catch (error) {
+      setWishError(
+        apiErrorStatus(error) === 401
+          ? config.copy.wishPasscodeIncorrect
+          : apiErrorMessage(error) ?? config.copy.wishUnlockError,
+      );
       setWishPasscode('');
     }
   };
 
-  const submitBirthdayWish = async (event: React.FormEvent<HTMLFormElement>) => {
+  const submitSecretWish = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setWishError('');
     try {
-      await sendBirthdayWish.mutateAsync({
-        data: { name: wishName.trim() || undefined, message: wishMessage, website: honeypot },
+      const result = await sendBirthdayWish.mutateAsync({
+        data: { message: wishMessage, website: honeypot },
       });
-      setWishSent(true);
-      setWishName('');
+      if (!result.sent) {
+        setWishError(config.copy.wishSetupError);
+        return;
+      }
       setWishMessage('');
       setHoneypot('');
-    } catch {
-      setWishError(config.copy.wishSendError);
+      setScene('wishSent');
+    } catch (error) {
+      setWishError(apiErrorMessage(error) ?? config.copy.wishSetupError);
     }
-  };
-
-  const closeWishForm = () => {
-    setWishFormOpen(false);
-    setWishError('');
   };
 
   useEffect(() => () => clearInteractionTimers(), []);
   useEffect(() => () => clearInteractionTimers(), [scene]);
 
   useEffect(() => setHeart(heartCode()), []);
+  useEffect(() => {
+    if (scene !== 'unlocking') return;
+    const timer = window.setTimeout(() => setScene('loveMessage'), config.durations.unlockHold);
+    return () => window.clearTimeout(timer);
+  }, [scene]);
+
+  useEffect(() => {
+    const totalParagraphs = config.personalLoveMessage.paragraphs.length;
+    if (scene !== 'loveMessage' || visibleLoveParagraphs >= totalParagraphs) return;
+    const timer = window.setTimeout(
+      () => setVisibleLoveParagraphs((visible) => Math.min(visible + 1, totalParagraphs)),
+      config.durations.loveParagraphReveal,
+    );
+    return () => window.clearTimeout(timer);
+  }, [scene, visibleLoveParagraphs]);
+
   useEffect(() => {
     if (!letterOpen) {
       setTypedLetter('');
@@ -346,6 +383,25 @@ function App() {
 
   return (
     <main className="story-root" style={themeStyle} data-testid="birthday-story">
+      {isPreludeScene(scene) && (
+        <BirthdayPrelude
+          scene={scene}
+          passcode={wishPasscode}
+          onPasscodeChange={setWishPasscode}
+          onUnlock={unlockBirthdayExperience}
+          unlockPending={unlockBirthdayWish.isPending}
+          unlockError={wishError}
+          visibleLoveParagraphs={visibleLoveParagraphs}
+          wishMessage={wishMessage}
+          onWishMessageChange={setWishMessage}
+          onSubmitWish={submitSecretWish}
+          sendingWish={sendBirthdayWish.isPending}
+          wishError={wishError}
+          honeypot={honeypot}
+          onHoneypotChange={setHoneypot}
+          onContinue={scene === 'loveMessage' ? () => setScene('secretWish') : replay}
+        />
+      )}
       {scene === 'code' && (
         <section className="code-scene" data-testid="scene-code-opening">
           <CodeRain /><div className="code-vignette" />
@@ -487,106 +543,6 @@ function App() {
             <p className="finale-copy">{config.copy.finaleLine}</p>
             <p className="stage-copy">{config.copy.openingLine}</p>
             <button className="primary-action" onClick={replay} data-testid="button-replay">REPLAY YOUR SURPRISE ↻</button>
-            <div className="wish-form-area">
-              {!wishFormOpen && (
-                <button
-                  className="wish-form-toggle"
-                  type="button"
-                  onClick={() => setWishFormOpen(true)}
-                  data-testid="button-open-wish-form"
-                >
-                  {config.copy.wishFormToggle}
-                </button>
-              )}
-              {wishFormOpen && (
-                <section className="wish-form-card" aria-labelledby="wish-form-title" data-testid="birthday-wish-form">
-                  <button className="wish-form-close" type="button" onClick={closeWishForm}>
-                    {config.copy.wishCloseButton}
-                  </button>
-                  {!wishUnlocked ? (
-                    <>
-                      <p className="wish-form-kicker">a little secret, just for you</p>
-                      <h2 className="wish-form-title" id="wish-form-title">{config.copy.wishGateTitle}</h2>
-                      <p className="wish-form-copy">{config.copy.wishGateCopy}</p>
-                      <p className="wish-hint">{config.copy.wishPasscodeHint}</p>
-                      <form className="wish-form" onSubmit={unlockWishForm}>
-                        <label className="wish-field-label" htmlFor="wish-passcode">{config.copy.wishPasscodeLabel}</label>
-                        <input
-                          className="wish-input passcode-input"
-                          id="wish-passcode"
-                          type="password"
-                          inputMode="numeric"
-                          pattern="[0-9]{4}"
-                          maxLength={4}
-                          autoComplete="off"
-                          value={wishPasscode}
-                          onChange={(event) => setWishPasscode(event.target.value.replace(/\D/g, '').slice(0, 4))}
-                          aria-describedby="wish-passcode-hint"
-                          required
-                          data-testid="input-wish-passcode"
-                        />
-                        <span id="wish-passcode-hint" className="sr-only">{config.copy.wishPasscodeHint}</span>
-                        <button className="primary-action" type="submit" disabled={unlockBirthdayWish.isPending} data-testid="button-unlock-wish-form">
-                          {unlockBirthdayWish.isPending ? 'OPENING…' : config.copy.wishUnlockButton}
-                        </button>
-                      </form>
-                    </>
-                  ) : (
-                    <>
-                      <p className="wish-form-kicker">a little note for my inbox</p>
-                      <h2 className="wish-form-title" id="wish-form-title">{config.copy.wishUnlockedTitle}</h2>
-                      {wishSent ? (
-                        <p className="wish-form-status success" role="status" data-testid="text-wish-sent">{config.copy.wishSent}</p>
-                      ) : (
-                        <form className="wish-form" onSubmit={submitBirthdayWish}>
-                          <label className="wish-field-label" htmlFor="wish-name">{config.copy.wishNameLabel}</label>
-                          <input
-                            className="wish-input"
-                            id="wish-name"
-                            type="text"
-                            maxLength={60}
-                            autoComplete="name"
-                            value={wishName}
-                            onChange={(event) => setWishName(event.target.value)}
-                          />
-                          <label className="wish-field-label" htmlFor="wish-message">{config.copy.wishMessageLabel}</label>
-                          <textarea
-                            className="wish-input wish-textarea"
-                            id="wish-message"
-                            maxLength={500}
-                            placeholder={config.copy.wishMessagePlaceholder}
-                            value={wishMessage}
-                            onChange={(event) => setWishMessage(event.target.value)}
-                            required
-                            data-testid="input-wish-message"
-                          />
-                          <div className="wish-form-meta">
-                            <span className="wish-privacy-note">{config.copy.wishPrivacyNote}</span>
-                            <span className="wish-counter">{wishMessage.length}/500</span>
-                          </div>
-                          <label className="wish-honeypot" aria-hidden="true">
-                            Leave this field empty
-                            <input
-                              type="text"
-                              name="website"
-                              tabIndex={-1}
-                              autoComplete="off"
-                              value={honeypot}
-                              onChange={(event) => setHoneypot(event.target.value)}
-                            />
-                          </label>
-                          <button className="primary-action" type="submit" disabled={sendBirthdayWish.isPending} data-testid="button-send-birthday-wish">
-                            {sendBirthdayWish.isPending ? config.copy.wishSending : config.copy.wishSendButton}
-                          </button>
-                        </form>
-                      )}
-                    </>
-                  )}
-                  {wishError && <p className="wish-form-status error" role="alert" data-testid="text-wish-error">{wishError}</p>}
-                  {!wishSent && wishUnlocked && <p className="wish-private-note">{config.copy.wishPrivacyNote}</p>}
-                </section>
-              )}
-            </div>
           </div>
         </section>
       )}

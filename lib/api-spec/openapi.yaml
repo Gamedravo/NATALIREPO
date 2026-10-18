@@ -56,7 +56,7 @@ paths:
     post:
       operationId: sendBirthdayWish
       tags: [birthdayWishes]
-      summary: Email a birthday wish to the connected inbox
+      summary: Email a private birthday wish to the configured recipient
       requestBody:
         required: true
         content:
@@ -107,9 +107,6 @@ components:
     BirthdayWishInput:
       type: object
       properties:
-        name:
-          type: string
-          maxLength: 60
         message:
           type: string
           minLength: 1

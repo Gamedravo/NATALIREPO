@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
@@ -464,6 +464,74 @@ button { font: inherit; }
 .wish-form-status.error { color:#a23d5e; }
 .wish-honeypot { position:absolute!important; width:1px!important; height:1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; }
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.gate-stage { overflow:hidden; background:radial-gradient(ellipse at 50% 42%,#fffaf2 0,#f5e5ec 56%,#e9cbd9 100%); }
+.gate-content { max-width:500px; padding:clamp(28px,6vw,54px) clamp(20px,6vw,48px); border:1px solid #d4adb4; border-radius:28px; background:linear-gradient(145deg,#fffaf3ed,#ffeff5e8); box-shadow:0 24px 72px #57243c29,inset 0 0 0 7px #ffffff80; }
+.gate-lock { width:62px; height:62px; display:grid; place-items:center; margin:0 auto 20px; border:1px solid #ddb4bb; border-radius:50%; color:#d55383; background:radial-gradient(circle,#fff7f5 0,#f7dce6 72%); box-shadow:0 0 26px #e276a34c; font:32px var(--app-font-serif); }
+.gate-lock span { animation:heart-glow 1.8s ease-in-out infinite; }
+.gate-content .wish-form-title { font-size:clamp(30px,8vw,40px); }
+.gate-form { align-items:center; }
+.gate-form .wish-field-label { margin-top:2px; }
+.prelude-hearts,.unlock-particles,.wish-screen-sparkles { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+.prelude-hearts i,.unlock-particles i,.wish-screen-sparkles i { position:absolute; left:var(--particle-x); top:-28px; color:var(--particle-color,#d94e84); opacity:0; font-style:normal; animation:prelude-float var(--particle-duration,8s) linear var(--particle-delay,0s) infinite; text-shadow:0 0 12px #d9518466; }
+.prelude-hearts i:nth-child(1),.unlock-particles i:nth-child(1),.wish-screen-sparkles i:nth-child(1){--particle-x:8%;--particle-duration:9s;--particle-delay:.2s}
+.prelude-hearts i:nth-child(2),.unlock-particles i:nth-child(2),.wish-screen-sparkles i:nth-child(2){--particle-x:19%;--particle-duration:8s;--particle-delay:1.2s;--particle-color:#b2587b}
+.prelude-hearts i:nth-child(3),.unlock-particles i:nth-child(3),.wish-screen-sparkles i:nth-child(3){--particle-x:31%;--particle-duration:10s;--particle-delay:2.1s}
+.prelude-hearts i:nth-child(4),.unlock-particles i:nth-child(4),.wish-screen-sparkles i:nth-child(4){--particle-x:43%;--particle-duration:8.5s;--particle-delay:.8s;--particle-color:#d6b46e}
+.prelude-hearts i:nth-child(5),.unlock-particles i:nth-child(5),.wish-screen-sparkles i:nth-child(5){--particle-x:56%;--particle-duration:9.5s;--particle-delay:3s}
+.prelude-hearts i:nth-child(6),.unlock-particles i:nth-child(6),.wish-screen-sparkles i:nth-child(6){--particle-x:68%;--particle-duration:8s;--particle-delay:1.8s;--particle-color:#b2587b}
+.prelude-hearts i:nth-child(7),.unlock-particles i:nth-child(7),.wish-screen-sparkles i:nth-child(7){--particle-x:81%;--particle-duration:10.5s;--particle-delay:2.7s}
+.prelude-hearts i:nth-child(8),.unlock-particles i:nth-child(8),.wish-screen-sparkles i:nth-child(8){--particle-x:93%;--particle-duration:8.5s;--particle-delay:.5s;--particle-color:#d6b46e}
+.unlocking-scene { overflow:hidden; isolation:isolate; background:radial-gradient(ellipse at 50% 44%,#80284f 0,#41162f 50%,#210d21 100%); color:#fff2f7; }
+.unlocking-scene:before { border-color:#e9a7c366; }
+.unlocking-scene:after { background:radial-gradient(ellipse at center,#ed548344,transparent 65%); }
+.unlock-content { width:min(92vw,650px); position:relative; z-index:1; text-align:center; animation:rise .7s both; }
+.opening-lock { width:100px; height:112px; position:relative; margin:0 auto 32px; animation:unlock-jiggle .8s ease-in-out .25s both; }
+.lock-shackle { position:absolute; left:27px; top:1px; width:46px; height:56px; border:8px solid #edb4c8; border-bottom:0; border-radius:28px 28px 0 0; transform-origin:78% 92%; animation:lock-open .8s ease-in .45s both; }
+.lock-body { position:absolute; left:8px; bottom:0; width:84px; height:68px; display:grid; place-items:center; border:1px solid #f6c9d4; border-radius:18px; color:#fff2f7; background:linear-gradient(145deg,#e78ba9,#9e416b); box-shadow:0 0 38px #f27eaa77,inset 0 2px #ffe0ea; font-size:31px; }
+.unlock-heart { position:absolute; left:50%; top:36px; z-index:2; color:#ffbad1; font-size:52px; opacity:0; transform:translate(-50%,12px) scale(.4); text-shadow:0 0 26px #ff70a9,0 0 70px #ff458b; animation:unlock-heart-reveal 1s ease-out 1.1s forwards; }
+.unlock-headline { max-width:630px; margin:0 auto; color:#ffe8f1; font:600 clamp(24px,6vw,43px)/1.25 var(--app-font-serif); letter-spacing:.045em; text-wrap:balance; text-shadow:0 0 26px #f76eaa77; opacity:0; animation:rise .8s ease-out 1.5s forwards; }
+.unlock-particles i { z-index:0; color:#ffc0d7; font-size:clamp(14px,3vw,23px); }
+.love-scene { min-height:100dvh; max-height:100dvh; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; align-items:start; padding:clamp(20px,4vh,44px) 18px; }
+.love-letter-card { width:min(100%,700px); position:relative; margin:auto; padding:clamp(26px,6vw,52px); border:1px solid #dfc49d; border-radius:8px 22px 8px 22px; background:repeating-linear-gradient(0deg,transparent 0 31px,#c38a6820 32px 33px),linear-gradient(135deg,#fffaf0,#fff5e8 70%,#f9e8eb); box-shadow:0 22px 60px #6333472b,inset 0 0 0 7px #fffdf477; color:#654153; text-align:left; }
+.love-letter-card:before { content:""; position:absolute; inset:14px; border:1px solid #d8bd9b88; pointer-events:none; }
+.love-letter-card .wish-form-kicker,.love-letter-card .wish-form-title { position:relative; text-align:center; }
+.love-letter-card .wish-form-title { margin-bottom:26px; font:500 clamp(38px,7vw,50px)/1.05 "Caveat",cursive; }
+.love-letter-body { position:relative; font:500 23px/1.48 "Caveat",cursive; }
+.love-letter-body p { margin:0 0 16px; }
+.love-greeting { color:#a34f6d; font-size:28px; font-weight:600; }
+.love-paragraph { animation:paragraph-in .65s ease-out both; }
+.love-signature { padding-top:7px; color:#a34f6d; text-align:right; font-size:22px; }
+.love-continue { display:block; position:relative; margin:28px auto 0; }
+.love-card-hearts i { position:fixed; z-index:1; color:#d94e8466; font-style:normal; pointer-events:none; animation:heart-float 3.8s ease-in-out infinite; }
+.love-card-hearts i:nth-child(1) { top:16%; left:8%; font-size:28px; }
+.love-card-hearts i:nth-child(2) { right:9%; bottom:20%; font-size:22px; animation-delay:.8s; }
+.love-card-hearts i:nth-child(3) { top:34%; right:5%; color:#d6b46e88; font-size:20px; animation-delay:1.4s; }
+.secret-wish-stage { overflow:hidden; background:linear-gradient(145deg,#fff6f6 0%,#f1e4f5 52%,#f8e8ef 100%); }
+.secret-wish-stage:after { background:radial-gradient(ellipse at 50% 33%,#fffdf2a8,transparent 58%),radial-gradient(ellipse at 90% 80%,#dca6d655,transparent 34%); }
+.secret-wish-content { width:min(100%,700px); position:relative; z-index:1; }
+.wish-star-emblem { width:64px; height:64px; display:grid; place-items:center; margin:0 auto 15px; border-radius:50%; color:#f0bf73; background:radial-gradient(circle,#fffdf4 0,#f6dbe6 72%); box-shadow:0 0 28px #e4a0d588; font-size:39px; animation:star-glow 2s ease-in-out infinite; }
+.secret-wish-title { font-size:clamp(30px,7vw,58px); }
+.secret-wish-prompt { max-width:570px; margin:0 auto 22px; color:#805767; font:italic 16px/1.6 var(--app-font-serif); }
+.secret-wish-prompt p { margin:0 0 10px; }
+.secret-wish-form { width:min(100%,590px); margin:0 auto; padding:clamp(18px,4vw,30px); border:1px solid #d5b7d5; border-radius:22px; background:linear-gradient(145deg,#fffaf2e8,#fdf3ffe8); box-shadow:0 18px 48px #673b6530,inset 0 0 0 5px #ffffff70; }
+.secret-wish-input { min-height:154px; border-color:#d4b5d3; background:#fffdfbe8; font-size:17px; }
+.secret-wish-input:focus { border-color:#ac70a6; box-shadow:0 0 0 3px #bf84c126; }
+.secret-wish-submit { margin-top:16px; }
+.secret-wish-submit:disabled { cursor:wait; opacity:.65; transform:none; }
+.secret-wish-stage .wish-form-meta { align-items:flex-start; }
+.secret-wish-stage .wish-private-note { margin:0; text-align:left; }
+.secret-wish-stage .wish-form-status { max-width:590px; }
+.wish-screen-sparkles i { font-size:clamp(18px,4vw,31px); color:#b05ca0; }
+.wish-success-stage { overflow:hidden; }
+.wish-success-content { padding-top:clamp(90px,16vh,160px); }
+.wish-success-animation { position:absolute; z-index:0; inset:0; pointer-events:none; overflow:hidden; }
+.wish-success-trail { position:absolute; top:8%; left:50%; width:min(72vw,380px); height:auto; transform:translateX(-50%); overflow:visible; }
+.wish-success-trail path { fill:none; stroke:#d95184; stroke-width:3.5; stroke-linecap:round; stroke-dasharray:700; stroke-dashoffset:700; filter:drop-shadow(0 0 8px #ee70a5); animation:draw-wish-heart 2.5s ease-out .2s forwards; }
+.wish-success-star { position:absolute; left:calc(50% - 10px); top:41%; color:#f0ba6b; font-size:35px; text-shadow:0 0 24px #efb25b; animation:wish-star-flight 2.2s cubic-bezier(.2,.7,.25,1) forwards; }
+.wish-success-content { position:relative; z-index:1; }
+.wish-success-content .finale-title { max-width:760px; }
+.wish-success-content .stage-copy { margin-bottom:26px; }
+.wish-success-content .primary-action { position:relative; }
 @keyframes rise {from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @keyframes scene-arrive {from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes char-in {to{opacity:1}}
@@ -479,7 +547,16 @@ button { font: inherit; }
 @keyframes rose-sway {0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
 @keyframes petal-drift {0%{transform:translate3d(0,-10px,0) rotate(0);opacity:0}12%{opacity:.8}85%{opacity:.65}100%{transform:translate3d(38px,105vh,0) rotate(460deg);opacity:0}}
 @keyframes text-glitch {0%,88%,100%{transform:translateX(0);text-shadow:0 0 24px #f04a96b0}90%{transform:translateX(2px);text-shadow:-2px 0 #fda5c4,2px 0 #9d315a}92%{transform:translateX(-2px);text-shadow:2px 0 #fda5c4,-2px 0 #9d315a}}
+@keyframes prelude-float {0%{transform:translate3d(0,-20px,0) rotate(0);opacity:0}12%{opacity:.6}82%{opacity:.7}100%{transform:translate3d(26px,108vh,0) rotate(320deg);opacity:0}}
+@keyframes unlock-jiggle {0%,100%{transform:rotate(0)}22%{transform:rotate(-7deg)}48%{transform:rotate(6deg)}72%{transform:rotate(-3deg)}}
+@keyframes lock-open {0%{transform:rotate(0) translateY(0)}45%{transform:rotate(-28deg) translateY(-8px)}100%{transform:rotate(-24deg) translateY(-7px)}}
+@keyframes unlock-heart-reveal {0%{opacity:0;transform:translate(-50%,12px) scale(.4)}60%{opacity:1;transform:translate(-50%,-4px) scale(1.15)}100%{opacity:1;transform:translate(-50%,0) scale(1)}}
+@keyframes paragraph-in {from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes star-glow {50%{transform:scale(1.08);box-shadow:0 0 42px #e4a0d5}}
+@keyframes wish-star-flight {0%{transform:translate(0,0) scale(1);opacity:1}72%{opacity:1}100%{transform:translate(25vw,-32vh) scale(.3);opacity:0}}
+@keyframes draw-wish-heart {to{stroke-dashoffset:0}}
 @media(max-width:600px){.album{min-height:330px;padding:10px}.album-photo{max-height:290px;width:min(100%,235px)}.album-page{padding:10px 5px}.cover-name{font-size:42px}.gift-scene{gap:8px;min-height:220px}.cake{height:180px;transform:scale(.9);transform-origin:bottom center}.bouquet{height:195px;transform:scale(.88);transform-origin:bottom center}.stage{padding:35px 18px}.letter{font-size:16px;padding:22px 18px}}
+@media(max-width:600px){.gate-content{padding:30px 20px}.unlock-headline{font-size:clamp(23px,7vw,34px)}.love-scene{padding:16px 12px}.love-letter-card{padding:31px 22px}.love-letter-body{font-size:21px;line-height:1.42}.love-greeting{font-size:26px}.love-card-hearts i:nth-child(1){left:3%}.love-card-hearts i:nth-child(2){right:3%}.secret-wish-content{padding:4px}.secret-wish-prompt{font-size:15px}.secret-wish-form{padding:17px}.wish-success-content{padding-top:clamp(120px,24vh,190px)}.wish-success-star{top:39%}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
 /**
