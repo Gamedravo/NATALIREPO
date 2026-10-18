@@ -438,6 +438,32 @@ button { font: inherit; }
 .finale-title {font:600 clamp(29px,7vw,65px)/1.12 var(--app-font-serif);color:var(--natali-rose,#8c3854);margin:0 auto 18px;max-width:800px;text-shadow:0 0 20px #d94e8440}
 .finale-copy {font:500 12px/1.8 var(--app-font-sans);letter-spacing:.12em;color:#744b59;max-width:600px;margin:0 auto 30px}
 .fade-in {animation:rise .7s both}
+.wish-form-area { width:min(100%,560px); margin:28px auto 0; }
+.wish-form-toggle { border:1px solid #c78c9b; border-radius:999px; padding:12px 18px; color:#78394f; background:#fff8f1c9; cursor:pointer; letter-spacing:.1em; font:600 10px var(--app-font-sans); transition:transform .2s,background .2s; }
+.wish-form-toggle:hover { transform:translateY(-2px); background:#fff8f1; }
+.wish-form-card { position:relative; margin:0 auto; padding:30px clamp(18px,5vw,38px); border:1px solid #d7b99c; border-radius:20px; background:linear-gradient(145deg,#fffaf2,#fff2f3); box-shadow:0 18px 50px #75415020,inset 0 0 0 5px #ffffff88; text-align:left; animation:rise .5s both; }
+.wish-form-close { position:absolute; right:15px; top:14px; border:0; padding:6px; background:transparent; color:#946779; cursor:pointer; letter-spacing:.12em; font:600 9px var(--app-font-sans); }
+.wish-form-kicker { margin:0 0 8px; color:#ad7182; text-align:center; text-transform:uppercase; letter-spacing:.18em; font:500 9px var(--app-font-mono); }
+.wish-form-title { margin:0 auto 9px; color:#69374a; text-align:center; font:italic 30px/1.2 var(--app-font-serif); }
+.wish-form-copy { max-width:380px; margin:0 auto 14px; color:#805767; text-align:center; font:italic 16px/1.5 var(--app-font-serif); }
+.wish-hint { width:max-content; max-width:100%; margin:0 auto 21px; padding:8px 12px; border:1px dashed #d4a6aa; border-radius:999px; color:#a34f6d; background:#fff7f3; font:italic 13px var(--app-font-serif); }
+.wish-form { display:grid; gap:9px; }
+.wish-field-label { margin-top:8px; color:#734356; font:600 11px var(--app-font-sans); letter-spacing:.05em; }
+.wish-input { width:100%; min-height:44px; border:1px solid #dfc4c0; border-radius:11px; padding:11px 13px; color:#532a39; background:#fffdf9; font:15px/1.45 var(--app-font-serif); outline:none; transition:border-color .2s,box-shadow .2s; }
+.wish-input:focus { border-color:#bd7187; box-shadow:0 0 0 3px #d9518422; }
+.wish-input::placeholder { color:#bc9aa1; }
+.passcode-input { width:148px; margin:0 auto 10px; text-align:center; font:600 23px/1 var(--app-font-mono); letter-spacing:.42em; padding-left:calc(13px + .42em); }
+.wish-textarea { min-height:120px; resize:vertical; }
+.wish-form-meta { display:flex; justify-content:space-between; gap:12px; align-items:center; color:#a37882; font:11px/1.4 var(--app-font-sans); }
+.wish-counter { white-space:nowrap; font-variant-numeric:tabular-nums; }
+.wish-private-note { margin:12px 0 0; color:#9c7180; text-align:center; font:italic 12px var(--app-font-serif); }
+.wish-form-card .primary-action { justify-self:center; margin-top:10px; }
+.wish-form-card .primary-action:disabled { cursor:wait; opacity:.65; transform:none; }
+.wish-form-status { margin:14px auto 0; color:#7d4b5c; text-align:center; font:italic 15px/1.5 var(--app-font-serif); }
+.wish-form-status.success { color:#6e7658; }
+.wish-form-status.error { color:#a23d5e; }
+.wish-honeypot { position:absolute!important; width:1px!important; height:1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 @keyframes rise {from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @keyframes scene-arrive {from{opacity:0;filter:blur(5px)}to{opacity:1;filter:blur(0)}}
 @keyframes char-in {to{opacity:1}}
